@@ -1,0 +1,8 @@
+[package]
+name = "cdc"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+seahorse = { git = "https://github.com/ksk001100/seahorse", branch = "dev" }
+csv = "1.3"
