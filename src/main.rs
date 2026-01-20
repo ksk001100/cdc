@@ -1,29 +1,42 @@
-use seahorse::{App, Context};
+use koral::prelude::*;
 use std::collections::HashMap;
 use std::error::Error;
 
-fn main() {
-    let app = App::new("cdc")
-        .description("Check for duplicate values in CSV file by specified header")
-        .version(env!("CARGO_PKG_VERSION"))
-        .usage("cdc <header_name> <file_path>")
-        .action(check_duplicates);
+#[derive(Flag)]
+#[flag(
+    name = "header",
+    short = 'h',
+    required = true,
+    value_name = "HEADER_NAME",
+    help = "Specify the header name to check for duplicates"
+)]
+struct HeaderFlag(#[allow(dead_code)] String);
 
+#[derive(Flag)]
+#[flag(
+    name = "input",
+    short = 'i',
+    value_name = "FILE_PATH",
+    required = true,
+    help = "Specify the input CSV file path"
+)]
+struct InputFlag(#[allow(dead_code)] String);
+
+#[derive(App)]
+#[app(name = "cdc", version = env!("CARGO_PKG_VERSION"), action = run)]
+#[app(flags(HeaderFlag, InputFlag))]
+struct CdcApp;
+
+fn main() {
+    let mut app = CdcApp;
     if let Err(e) = app.run(std::env::args().collect()) {
         eprintln!("Error: {}", e);
         std::process::exit(1);
     }
 }
 
-fn check_duplicates(c: &Context) -> Result<(), Box<dyn Error>> {
-    if c.args.len() < 2 {
-        return Err("Usage: cdc <header_name> <file_path>".into());
-    }
-
-    let header = &c.args[0];
-    let file_path = &c.args[1];
-
-    process_csv(file_path, header)?;
+fn run(header: FlagArg<HeaderFlag>, input: FlagArg<InputFlag>) -> KoralResult<()> {
+    process_csv(&*input, &*header).unwrap();
     Ok(())
 }
 
