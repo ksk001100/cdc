@@ -1,6 +1,5 @@
 use koral::prelude::*;
 use std::collections::HashMap;
-use std::error::Error;
 
 #[derive(Flag)]
 #[flag(
@@ -22,7 +21,7 @@ struct HeaderFlag(#[allow(dead_code)] String);
 )]
 struct InputFlag(#[allow(dead_code)] String);
 
-#[derive(App)]
+#[derive(App, Default)]
 #[app(name = "cdc", version = env!("CARGO_PKG_VERSION"), action = run)]
 #[app(flags(HeaderFlag, InputFlag))]
 struct CdcApp;
@@ -36,11 +35,11 @@ fn main() {
 }
 
 fn run(header: FlagArg<HeaderFlag>, input: FlagArg<InputFlag>) -> KoralResult<()> {
-    process_csv(&*input, &*header).unwrap();
+    process_csv(&*input, &*header).koral_err()?;
     Ok(())
 }
 
-fn process_csv(file_path: &str, target_header: &str) -> Result<(), Box<dyn Error>> {
+fn process_csv(file_path: &str, target_header: &str) -> anyhow::Result<()> {
     let mut reader = csv::Reader::from_path(file_path)?;
 
     // Get headers
@@ -50,7 +49,7 @@ fn process_csv(file_path: &str, target_header: &str) -> Result<(), Box<dyn Error
     let target_index = headers
         .iter()
         .position(|h| h == target_header)
-        .ok_or_else(|| format!("Header '{}' not found in CSV file", target_header))?;
+        .ok_or_else(|| anyhow::anyhow!("Header '{}' not found in CSV file", target_header))?;
 
     // Track values and their line numbers
     let mut value_lines: HashMap<String, Vec<usize>> = HashMap::new();
