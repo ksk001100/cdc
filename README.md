@@ -21,20 +21,22 @@ cargo build --release
 ### 使用方法
 
 ```bash
-cdc <ヘッダー名> <ファイルパス>
+cdc --header <ヘッダー名> --input <ファイルパス>
+# または
+cdc -h <ヘッダー名> -i <ファイルパス>
 ```
 
 ### 引数
 
-- `<ヘッダー名>`: 重複チェックを行うCSVのカラム名
-- `<ファイルパス>`: チェック対象のCSVファイルのパス
+- `-h, --header <ヘッダー名>`: 重複チェックを行うCSVのカラム名 (必須)
+- `-i, --input <ファイルパス>`: チェック対象のCSVファイルのパス (必須)
 
 ## 使用例
 
 ### 基本的な使い方
 
 ```bash
-./target/release/cdc email users.csv
+./target/release/cdc -h email -i users.csv
 ```
 
 このコマンドは `users.csv` ファイル内の `email` カラムで重複をチェックします。
@@ -64,7 +66,7 @@ No duplicates found in column 'email'
 ## 技術スタック
 
 - [Rust](https://www.rust-lang.org/) - プログラミング言語
-- [seahorse](https://github.com/ksk001100/seahorse) - CLIフレームワーク
+- [koral](https://github.com/ksk001100/koral) - CLIフレームワーク
 - [csv](https://github.com/BurntSushi/rust-csv) - CSV処理ライブラリ
 
 ## ライセンス
